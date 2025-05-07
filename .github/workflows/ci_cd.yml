@@ -38,7 +38,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           minikube start
-          eval $(minikube docker-env)  # Use Minikube's local Docker
+          eval $(minikube docker-env)
           docker build -t fastapi-app .
           kubectl apply -f k8s/deployment.yaml
 
