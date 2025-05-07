@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query
 import os
 import httpx
-import subprocess
 
 app = FastAPI()
 
@@ -9,7 +8,7 @@ app = FastAPI()
 GITHUB_API_URL = "https://api.github.com"
 
 # Retrieve GitHub token from environment variables.
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", 'not a real token')
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "not a real token")
 
 # This check is not required because the token will only be used locally/dev
 # environment
@@ -19,16 +18,18 @@ GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", 'not a real token')
 # Set headers for GitHub API requests.
 HEADERS = {
     "Authorization": f"token {GITHUB_TOKEN}",
-    "Accept": "application/vnd.github.v3+json"
+    "Accept": "application/vnd.github.v3+json",
 }
 
 # ----------------------------
 # Repository Operations
 # ----------------------------
 
+
 @app.post("/repositories/")
-async def create_repository(name: str = 'default-repo', description: str = "", private: bool = False):
-# async def create_repository(name: str, description: str = "", private: bool = False):
+async def create_repository(
+    name: str = "default-repo", description: str = "", private: bool = False
+):
     """
     Creates a new GitHub repository.
     """
@@ -45,7 +46,10 @@ async def create_repository(name: str = 'default-repo', description: str = "", p
     if response.status_code == 201:
         return response.json()
     else:
-        raise HTTPException(status_code=response.status_code, detail=response.json())
+        raise HTTPException(
+            status_code=response.status_code, detail=response.json()
+        )
+
 
 @app.delete("/repositories/{owner}/{repo}")
 async def delete_repository(owner: str, repo: str):
@@ -58,7 +62,10 @@ async def delete_repository(owner: str, repo: str):
     if response.status_code == 204:
         return {"message": "Repository deleted successfully."}
     else:
-        raise HTTPException(status_code=response.status_code, detail=response.json())
+        raise HTTPException(
+            status_code=response.status_code, detail=response.json()
+        )
+
 
 @app.get("/repositories/")
 async def list_repositories():
@@ -71,17 +78,22 @@ async def list_repositories():
     if response.status_code == 200:
         return response.json()
     else:
-        raise HTTPException(status_code=response.status_code, detail=response.json())
+        raise HTTPException(
+            status_code=response.status_code, detail=response.json()
+        )
 
 
 @app.get("/repositories/{owner}/{repo}/pull_requests")
 async def list_pull_requests(
     owner: str,
     repo: str,
-    limit: int = Query(10, description="Maximum number of pull requests to return")
+    limit: int = Query(
+        10, description="Maximum number of pull requests to return"
+    ),
 ):
     """
-    Retrieves open pull requests for the given repository along with contributors (the GitHub user who created the pull request).
+    Retrieves open pull requests for the given repository along with
+    contributors (the GitHub user who created the pull request).
     """
     url = f"{GITHUB_API_URL}/repos/{owner}/{repo}/pulls"
     params = {"state": "open", "per_page": limit}
@@ -94,25 +106,11 @@ async def list_pull_requests(
         for pull in pulls:
             pr_number = pull.get("number")
             contributor = pull.get("user", {}).get("login")
-            result.append({"pull_number": pr_number, "contributor": contributor})
+            result.append(
+                {"pull_number": pr_number, "contributor": contributor}
+            )
         return {"pull_requests": result}
     else:
-        raise HTTPException(status_code=response.status_code, detail=response.json())
-
-
-def run_command(command):
-    """Run a shell command and return its output."""
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-    return result.stdout if result.returncode == 0 else result.stderr
-
-@app.post("/pipeline/")
-async def run_pipeline():
-    results = {
-        "tests": run_command("pytest"),
-        "lint": run_command("flake8 main.py"),
-        "security": run_command("bandit -r ."),
-        "deployment": run_command("kubectl apply -f k8s/deployment.yaml"),
-    }
-    return results
-
-
+        raise HTTPException(
+            status_code=response.status_code, detail=response.json()
+        )

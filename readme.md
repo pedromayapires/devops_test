@@ -1,3 +1,8 @@
+Notes:
+. This application assumes the GITHUB_TOKEN is being store as a environment variable.
+. For this specific application it doesn't make sense to use a token as a user login would make more sense to manage accesses/permissions.
+. The tests being made have the responses being mocked which also doesn't make any sense other than to make them as the excercise/test that this is.
+
 - To create the secret for your GitHub token in minikube, run:
 kubectl create secret generic github-token --from-literal=token=GITHUB_TOKEN
 
