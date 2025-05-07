@@ -43,10 +43,10 @@ jobs:
 
       - name: Check working dir content
         working-directory: ${{ github.workspace }}
-        run: ls
+        run: ls -la
 
       - name: Docker build
-        run: docker buildx build -t fastapi-app:latest --file ../../Dockerfile ../..
+        run: docker buildx build -t fastapi-app:latest --file ./Dockerfile ./
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/deployment.yaml
