@@ -42,7 +42,7 @@ jobs:
         run: eval $(minikube docker-env)
 
       - name: Docker build
-        run: docker build -t fastapi-app -f ${{ github.workspace }}/Dockerfile ${{ github.workspace }}
+        run: docker build -t fastapi-app -f .
 
       # - name: Build and push Docker image
       #   run: |
