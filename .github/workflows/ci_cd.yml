@@ -31,10 +31,10 @@ jobs:
       - name: Run Security Checks
         run: bandit main.py
 
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    steps:
+  # deploy:
+  #   needs: build-and-test
+  #   runs-on: ubuntu-latest
+  #   steps:
       - name: Start kube
         run: minikube start
 
