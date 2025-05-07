@@ -39,7 +39,7 @@ jobs:
         run: |
           minikube start
           eval $(minikube docker-env)
-          docker build -t fastapi-app -f ~/Dockerfile .
+          docker build -t fastapi-app -f ${{ github.workspace }}/Dockerfile ${{ github.workspace }}
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/deployment.yaml
