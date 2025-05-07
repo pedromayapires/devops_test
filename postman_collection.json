@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "f860ddf0-37aa-4d52-938d-6db8e07d81ad",
+		"name": "Scala",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get pull requests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8006/repositories/{{owner}}/{{pr_repo}}/pull_requests",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"repositories",
+						"{{owner}}",
+						"{{pr_repo}}",
+						"pull_requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get reps",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8006/repositories/",
+					"host": [
+						"localhost"
+					],
+					"port": "8006",
+					"path": [
+						"repositories",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "owner",
+			"value": "pedromayapires"
+		},
+		{
+			"key": "pr_repo",
+			"value": "devops_test"
+		}
+	]
+}

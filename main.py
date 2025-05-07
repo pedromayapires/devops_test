@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 import os
 import httpx
-import asyncio
+import subprocess
 
 app = FastAPI()
 
@@ -9,9 +9,12 @@ app = FastAPI()
 GITHUB_API_URL = "https://api.github.com"
 
 # Retrieve GitHub token from environment variables.
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
-if not GITHUB_TOKEN:
-    raise EnvironmentError("GITHUB_TOKEN environment variable must be set.")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", 'not a real token')
+
+# This check is not required because the token will only be used locally/dev
+# environment
+# if not GITHUB_TOKEN:
+#     raise EnvironmentError("GITHUB_TOKEN environment variable must be set.")
 
 # Set headers for GitHub API requests.
 HEADERS = {
@@ -24,7 +27,8 @@ HEADERS = {
 # ----------------------------
 
 @app.post("/repositories/")
-async def create_repository(name: str, description: str = "", private: bool = False):
+async def create_repository(name: str = 'default-repo', description: str = "", private: bool = False):
+# async def create_repository(name: str, description: str = "", private: bool = False):
     """
     Creates a new GitHub repository.
     """
@@ -34,8 +38,10 @@ async def create_repository(name: str, description: str = "", private: bool = Fa
         "description": description,
         "private": private,
     }
+
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=HEADERS, json=payload)
+
     if response.status_code == 201:
         return response.json()
     else:
@@ -67,9 +73,6 @@ async def list_repositories():
     else:
         raise HTTPException(status_code=response.status_code, detail=response.json())
 
-# ----------------------------
-# Pull Request Operations
-# ----------------------------
 
 @app.get("/repositories/{owner}/{repo}/pull_requests")
 async def list_pull_requests(
@@ -86,6 +89,7 @@ async def list_pull_requests(
         response = await client.get(url, headers=HEADERS, params=params)
     if response.status_code == 200:
         pulls = response.json()
+
         result = []
         for pull in pulls:
             pr_number = pull.get("number")
@@ -95,39 +99,20 @@ async def list_pull_requests(
     else:
         raise HTTPException(status_code=response.status_code, detail=response.json())
 
-# ----------------------------
-# Simulated CI/CD Pipeline
-# ----------------------------
 
-async def run_tests():
-    # Simulate an asynchronous task for running tests.
-    await asyncio.sleep(2)
-    return "Tests passed."
-
-async def run_lint():
-    # Simulate an asynchronous task for linting.
-    await asyncio.sleep(1)
-    return "Lint passed."
-
-async def run_security():
-    # Simulate an asynchronous security check.
-    await asyncio.sleep(1)
-    return "Security check passed."
-
-async def run_deployment():
-    # Simulate a deployment step.
-    await asyncio.sleep(3)
-    return "Deployment successful."
+def run_command(command):
+    """Run a shell command and return its output."""
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    return result.stdout if result.returncode == 0 else result.stderr
 
 @app.post("/pipeline/")
 async def run_pipeline():
-    """
-    Runs a simulated CI/CD pipeline performing tests, lint, security checks, and deployment.
-    """
-    results = {}
-    results["tests"] = await run_tests()
-    results["lint"] = await run_lint()
-    results["security"] = await run_security()
-    results["deployment"] = await run_deployment()
-
+    results = {
+        "tests": run_command("pytest"),
+        "lint": run_command("flake8 main.py"),
+        "security": run_command("bandit -r ."),
+        "deployment": run_command("kubectl apply -f k8s/deployment.yaml"),
+    }
     return results
+
+

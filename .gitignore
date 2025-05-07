@@ -1,0 +1,8 @@
+.cache
+.dotnet
+.sonarlint
+.ssh
+.vscode-server
+.pytest_cache
+__pycache__
+venv
