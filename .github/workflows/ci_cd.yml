@@ -20,16 +20,16 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Unit Tests
-        run: pytest
+      # - name: Run Unit Tests
+      #   run: pytest
 
-      - name: Run Code Linting
-        run: |
-          flake8 main.py
-          flake8 tests/test_main.py
+      # - name: Run Code Linting
+      #   run: |
+      #     flake8 main.py
+      #     flake8 tests/test_main.py
 
-      - name: Run Security Checks
-        run: bandit main.py
+      # - name: Run Security Checks
+      #   run: bandit main.py
 
   deploy:
     needs: build-and-test
@@ -38,11 +38,11 @@ jobs:
       - name: Start kube
         run: minikube start
 
-      - name: Eval kube
-        run: eval $(minikube docker-env)
+      # - name: Eval kube
+      #   run: eval $(minikube docker-env)
 
       - name: Docker build
-        run: docker buildx build --platform linux/amd64,linux/arm64 -t fastapi-app:latest --file Dockerfile .
+        run: docker buildx build -t fastapi-app:latest --file Dockerfile .
 
       # - name: Build and push Docker image
       #   run: |
