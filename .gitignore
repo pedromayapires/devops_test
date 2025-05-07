@@ -2,7 +2,7 @@
 .dotnet
 .sonarlint
 .ssh
-.vscode-server
+.vscode*
 .pytest_cache
 __pycache__
 venv

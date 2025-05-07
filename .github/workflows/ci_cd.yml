@@ -37,8 +37,10 @@ jobs:
     steps:
       - name: Build and push Docker image
         run: |
-          docker tag fastapi-app ghcr.io/pedromayapires/fastapi-app:latest
-          docker push ghcr.io/pedromayapires/fastapi-app:latest
+          minikube start
+          eval $(minikube docker-env)  # Use Minikube's local Docker
+          docker build -t fastapi-app .
+          kubectl apply -f k8s/deployment.yaml
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/deployment.yaml
